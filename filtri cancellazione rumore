@@ -1,0 +1,165 @@
+%1. caricare ecgNoise e togliere la media
+ecg=load('ecgNoise.txt');
+ecg=ecg-mean(ecg);
+fs=200; %Hz
+N=length(ecg);
+smp=1:1:N;
+t=smp/fs;
+df=fs/N; %questa è la risoluzione in frequenza
+f=df*smp-df; %definizione di asse delle frequenze
+%si fa -df perché sennò il grafico non parte da 0, bisogna
+zommare per
+%vedere
+
+%2. calcolare la fft del segnale rumoroso
+ECG=fft(ecg);
+%3. Plottare, nella stessa figura (3x2), 10 s di segnale
+ecg(posizione 1)e
+%il modulo dello spettro del segnale rumoroso in
+rosso(posizione 2).
+figure
+
+subplot(3,2,1)
+plot(t(1:10*fs), ecg(1:10*fs), 'k');
+subplot(3,2,2)
+plot(f, abs(ECG), 'r');
+xlim([0 fs/2]);
+%4. Eliminare il rumore a bassa frequenza con un filtro
+butterworth del 6 ordine (butter, filtfilt).
+%Che filtro e che frequenza di taglio sono stati usati? Che
+ordine del filtro in butter è stato usato?
+[b,a]=butter(3,0.3*2/fs,'high'); %qualsiasi frequenza tale
+che elimini 0.4 e tale che lasci passare 0.5 (e anche 1.33)--
+> si vede dal nostro grafico
+%la frequenza di taglio deve essere normalizzata
+y=filtfilt(b,a,ecg);
+subplot(3,2,3)
+plot(t(1:10*fs), y(1:10*fs), 'k');
+%5. Calcolare lo spettro del segnale filtrato dal rumore a
+bassa frequenza.
+Y=fft(y);
+%6. Plottare nella stessa figura (3x2), 10 s disegnale ecg
+filtrato dal rumore a bassa frequenza (posizione 3)
+%e, sovrapposti, il modulo dello spettro del segnale rumoroso
+in rosso e del segnale filtrato dal rumore a bassa frequenza
+%in giallo(posizione 4)
+subplot(3,2,4)
+hold on;
+plot(f, abs(ECG), 'r')
+xlim([0 fs/2]);
+plot(f, abs(Y), 'g')
+xlim([0 fs/2]);
+hold off;
+%7. Eliminare anche il rumore ad alta frequenza con un filtro
+butterworth del 6 ordine (butter, filtfilt).
+%Che filtro e che frequenza di taglio sono stati usati?Che
+ordine delfiltro in butter è stato usato?
+[B,A]=butter(3, 40*2/fs, 'low');
+x=filtfilt(B,A,y);
+subplot(3,2,5)
+plot(t(1:10*fs), x(1:10*fs), 'k');
+%8. Calcolare lo spettro del segnale filtrato dal rumore a
+bassa e alta frequenza e plottare nella
+
+%stessa figura (3x2), 10 s disegnale ecg filtrato dal rumore
+a bassa e alta frequenza (posizione 5)e,
+%sovrapposti, il modulo dello spettro del segnale rumoroso in
+rosso e del segnale filtrato dal rumore
+%a bassa frequenza in giallo e del segnale filtrato dal
+rumore a bassa e alta frequenzain blu(posizione 6).
+X=fft(x);
+subplot(3,2,6)
+hold on;
+plot(f, abs(ECG), 'r')
+xlim([0 fs/2]);
+plot(f, abs(Y), 'g')
+xlim([0 fs/2]);
+plot(f, abs(X), 'b')
+xlim([0 fs/2]);
+hold off;
+%10. Aprire una nuova finestra e plottare, sovrapposti, 10 s
+di segnale rumoroso (rosso),
+%10 s di segnale filtrato dal rumore a bassa frequenza
+(giallo) e 10 s si segnale filtrato a bassa e alta frequenza
+(blu).
+figure
+hold on;
+plot(t(1:10*fs ), ecg(1:10*fs), 'r');
+plot(t(1:10*fs), y(1:10*fs), 'y');
+plot(t(1:10*fs), x(1:10*fs), 'b');
+hold off;
+
+%%
+%9. Ripetere i punti 3->8 utilizzando filtri butterworth ma
+la funzione filter (sempre 6 ordine).
+%1. caricare ecgNoise e togliere la media
+ecg=load('ecgNoise.txt');
+ecg=ecg-mean(ecg);
+fs=200; %Hz
+N=length(ecg);
+smp=1:1:N;
+N_t=N/fs; %lunghezza del segnale in tempo
+t=smp/fs;
+df=fs/N; %questa è la risoluzione in frequenza
+f=df*smp-df;
+
+%2. calcolare la fft del segnale rumoroso
+ECG=fft(ecg);
+%3. Plottare, nella stessa figura (3x2), 10 s di segnale
+ecg(posizione 1)e
+%il modulo dello spettro del segnale rumoroso in
+rosso(posizione 2).
+figure
+subplot(3,2,1)
+plot(t(1:10*fs), ecg(1:10*fs), 'k');
+subplot(3,2,2)
+plot(f, abs(ECG), 'r');
+xlim([0 fs/2]);
+%4. Eliminare il rumore a bassa frequenza con la funzione
+filter
+[b,a]=butter(6,0.3*2/fs,'high');
+y=filter(b,a,ecg);
+subplot(3,2,3)
+plot(t(1:10*fs), y(1:10*fs), 'k');
+%5. Calcolare lo spettro del segnale filtrato dal rumore a
+bassa frequenza.
+Y=fft(y);
+%6. Plottare nella stessa figura (3x2), 10 s disegnale ecg
+filtrato dal rumore a bassa frequenza (posizione 3)
+%e, sovrapposti, il modulo dello spettro del segnale rumoroso
+in rosso e del segnale filtrato dal rumore a bassa frequenza
+%in giallo(posizione 4)
+subplot(3,2,4)
+hold on;
+plot(f, abs(ECG), 'r')
+xlim([0 fs/2]);
+plot(f, abs(Y), 'g')
+xlim([0 fs/2]);
+hold off;
+%7. Eliminare anche il rumore ad alta frequenza con un filtro
+butterworth del 6 ordine (butter, filtfilt).
+%Che filtro e che frequenza di taglio sono stati usati?Che
+ordine delfiltro in butter è stato usato?
+[B,A]=butter(6, 40*2/fs, 'low');
+x=filter(B,A,y);
+subplot(3,2,5)
+plot(t(1:10*fs), x(1:10*fs), 'k');
+
+%8. Calcolare lo spettro del segnale filtrato dal rumore a
+bassa e alta frequenza e plottare nella
+%stessa figura (3x2), 10 s disegnale ecg filtrato dal rumore
+a bassa e alta frequenza (posizione 5)e,
+%sovrapposti, il modulo dello spettro del segnale rumoroso in
+rosso e del segnale filtrato dal rumore
+%a bassa frequenza in giallo e del segnale filtrato dal
+rumore a bassa e alta frequenzain blu(posizione 6).
+X=fft(x);
+subplot(3,2,6)
+hold on;
+plot(f, abs(ECG), 'r')
+xlim([0 fs/2]);
+plot(f, abs(Y), 'g')
+xlim([0 fs/2]);
+plot(f, abs(X), 'b')
+xlim([0 fs/2]);
+hold off;

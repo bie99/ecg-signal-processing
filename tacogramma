@@ -1,0 +1,169 @@
+%1) Caricare ecgNoise (fs=200 Hz) e togliere la media
+
+ecg=load('ecgNoise.txt');
+ecg=ecg-mean(ecg); 
+fs=200; %Hz
+N=length(ecg);
+smp=1:1:N;
+t=smp/fs;
+
+%2) Filtrare il segnale con un filtro passa banda tra 0.4 e 40 Hz (filtraggio bidirezionale, 6 ordine,
+%butterworth)
+[b,a]=butter(3, [0.4*2/fs, 40*2/fs], 'bandpass');
+ecgClean=filtfilt(b,a,ecg);
+
+
+%3) Identificare i picchi R con la funzione pan-tompkins
+%gr è un flag e può essere 1 o 0
+gr=0; %mettere gr=0 così le figure all'interno dell'algoritmo non vengono plottate
+[qrs_amp_raw,qrs_i_raw,delay]=pan_tompkin(ecgClean,fs,gr);
+qrs_i_raw=qrs_i_raw-round(delay/2); %osservazione sperimentale; si arrotonda perché i campioni sono dispari ed è meglio arrotondare
+%qrs_amp_raw=ampiezza dei picchi R
+%qrs_i_raw=posizioni picchi R
+%delay=ritardo di circa 17 campioni nella versione nuova dell'algoritmo (34
+%in quella vecchia)
+
+%posiziono il picco sul massimo
+
+Q=length(qrs_i_raw);
+qrs_i_raw_new=zeros(1, Q);
+for j = 2:(Q-1)
+    delta=8;
+    qrs_i_raw_2=(qrs_i_raw(j)-delta):(qrs_i_raw(j)+delta);
+    [M, J]=max(ecgClean(qrs_i_raw_2));
+    qrs_i_raw_new(j)=qrs_i_raw_2(J);
+    %M=ampiezza del massimo, I=posizione del massimo
+end
+
+%4) Plottare 15 sec di ecg filtrato nel tempo con sopra i picchi R, e correggere la loro posizione se
+%necessario. 
+
+t1=15;
+figure
+hold on;
+plot(smp, ecgClean);
+plot(qrs_i_raw_new(2:end-1), ecgClean(qrs_i_raw_new(2:end-1)), '*');
+title('Identificazione dei picchi R in campioni');
+xlabel('campioni');
+ylabel('ecg (mV)');
+hold off;
+
+%plottare qui tutto il segnale in tempo
+figure
+hold on;
+plot(t, ecgClean);
+plot(t(qrs_i_raw_new(2:end-1)), ecgClean(qrs_i_raw_new(2:end-1)), '*');
+title('Identificazione dei picchi R in tempo per tutto il segnale')
+xlabel('tempo(s)');
+ylabel('ecg (mV)');
+%xlim([0 t1]);
+hold off;
+
+
+%picchi R sul segnale di 15 s
+t1=15;
+tlim=t(1:t1*fs); %15 s
+ecgCleanlim=ecgClean(1:t1*fs); %ecg filtrato limitato ai 15 s
+qrs_i_raw_new_lim=qrs_i_raw_new(qrs_i_raw_new<=t1*fs);
+
+figure
+hold on;
+plot(tlim, ecgCleanlim); %plot dei 15s
+plot(tlim(qrs_i_raw_new_lim(2:end-1)),ecgCleanlim(qrs_i_raw_new_lim(2:end-1)), '*');
+title('Picchi R nei primi 15 s di segnale');
+xlabel('tempo(s)');
+ylabel('ecg (mV)');
+hold off;
+
+%5) Calcolare RR medio e RR standard deviation
+x=diff(t(qrs_i_raw_new(2:end-1)));
+RR_medio=mean(x); %esce 0.75 s che è un valore perfetto
+limite=RR_medio*10/100;
+deviazione_standard=std(RR_medio);
+%la deviazione std è minore del 10% dell'RRmedio quindi i calcoli hanno
+%significato fisiologico
+
+%6) Ripetere i punti 1-5 utilizzando ecgReal
+%1) Caricare ecgNoise (fs=200 Hz) e togliere la media
+
+ecg=load('ecgReal.txt');
+ecg=ecg-mean(ecg); 
+fs=200; %Hz
+N=length(ecg);
+smp=1:1:N;
+t=smp/fs;
+
+%2) Filtrare il segnale con un filtro passa banda tra 0.4 e 40 Hz (filtraggio bidirezionale, 6 ordine,
+%butterworth)
+[b,a]=butter(3, [0.4*2/fs, 40*2/fs], 'bandpass');
+ecgClean=filtfilt(b,a,ecg);
+
+%3) Identificare i picchi R con la funzione pan-tompkins
+%gr è un flag e può essere 1 o 0
+gr=0; %mettere gr=0 così le figure all'interno dell'algoritmo non vengono plottate
+[qrs_amp_raw,qrs_i_raw,delay]=pan_tompkin(ecgClean,fs,gr);
+qrs_i_raw=qrs_i_raw-round(delay/2); %osservazione sperimentale; si arrotonda perché i campioni sono dispari ed è meglio arrotondare
+%qrs_amp_raw=ampiezza dei picchi R
+%qrs_i_raw=posizioni picchi R
+%delay=ritardo di circa 17 campioni nella versione nuova dell'algoritmo (34
+%in quella vecchia)
+
+%posiziono il picco sul massimo
+
+Q=length(qrs_i_raw);
+qrs_i_raw_new=zeros(1, Q);
+for j = 2:(Q-1)
+    delta=8;
+    qrs_i_raw_2=(qrs_i_raw(j)-delta):(qrs_i_raw(j)+delta);
+    [M, J]=max(ecgClean(qrs_i_raw_2));
+    qrs_i_raw_new(j)=qrs_i_raw_2(J);
+    %M=ampiezza del massimo, I=posizione del massimo
+end
+
+%4) Plottare 15 sec di ecg filtrato nel tempo con sopra i picchi R, e correggere la loro posizione se
+%necessario. 
+
+t1=15;
+figure
+hold on;
+plot(smp, ecgClean);
+plot(qrs_i_raw_new(2:end-1), ecgClean(qrs_i_raw_new(2:end-1)), '*');
+title('Identificazione dei picchi R in campioni');
+xlabel('campioni');
+ylabel('ecg (mV)');
+hold off;
+
+%plottare qui tutto il segnale in tempo
+figure
+hold on;
+plot(t, ecgClean);
+plot(t(qrs_i_raw_new(2:end-1)), ecgClean(qrs_i_raw_new(2:end-1)), '*');
+title('Identificazione dei picchi R in tempo per tutto il segnale')
+xlabel('tempo(s)');
+ylabel('ecg (mV)');
+%xlim([0 t1]);
+hold off;
+
+
+%picchi R sul segnale di 15 s
+t1=15;
+tlim=t(1:t1*fs); %15 s
+ecgCleanlim=ecgClean(1:t1*fs); %ecg filtrato limitato ai 15 s
+qrs_i_raw_new_lim=qrs_i_raw_new(qrs_i_raw_new<=t1*fs);
+
+figure
+hold on;
+plot(tlim, ecgCleanlim); %plot dei 15s
+plot(tlim(qrs_i_raw_new_lim(2:end-1)),ecgCleanlim(qrs_i_raw_new_lim(2:end-1)), '*');
+title('Picchi R nei primi 15 s di segnale');
+xlabel('tempo(s)');
+ylabel('ecg (mV)');
+hold off;
+
+%5) Calcolare RR medio e RR standard deviation
+x=diff(t(qrs_i_raw_new(2:end-1)));
+RR_medio=mean(x); %esce 0.75 s che è un valore perfetto
+limite=RR_medio*10/100;
+deviazione_standard=std(RR_medio);
+%la deviazione std è minore del 10% dell'RRmedio quindi i calcoli hanno
+%significato fisiologico

@@ -1,0 +1,80 @@
+%1. Caricare ecgClean(fs=200 Hz)e togliere la media.
+ecg=load('ecgClean.txt');
+fs=200; %Hz
+N=length(ecg);
+smp=1:1:N;
+t=smp/fs;
+df=fs/N;
+f=df*smp-df;
+ecg=ecg-mean(ecg);
+%2. Ricampionare il segnale ecg originale a 100 Hz e a 40 Hz
+%Il campionamento, nella teoria dei segnali, è una tecnica
+che consiste nel
+%convertire un segnale continuo nel tempo oppure nello spazio
+in un segnale
+%discreto, valutandone l'ampiezza a intervalli temporali o
+spaziali solitamente regolari.
+f1s=100; %Hz
+f2s=40; %Hz
+x=resample(ecg,f1s,fs);
+y=resample(ecg,f2s,fs);
+%3. Plottare, nella stessa figura (3x2): 5s di segnale ecg
+originale (posizione 1) e il modulo del suo spettro(posizione
+2);
+% 5s di segnale ecg ricampionato a 100Hz(posizione 3)e il
+modulo del suo spettro(posizione 4);
+% 5s di segnale ecg ricampionato a 40 Hz(posizione 5) e il
+modulo del suo spettro(posizione 6).
+
+ECG=fft(ecg);
+X=fft(x);
+Y=fft(y);
+t1=5; %s
+Nx=length(x);
+smpx=1:1:Nx;
+tx=smpx/f1s;
+dfx=f1s/Nx;
+f1=dfx*smpx-dfx;
+Ny=length(y);
+smpy=1:1:Ny;
+ty=smpy/f2s;
+dfy=f2s/Ny;
+f2=dfy*smpy-dfy;
+figure
+subplot(3,2,1)
+plot(t(1:t1*fs), ecg(1:t1*fs))
+title('5s ecg - 200 Hz sampled');
+xlabel('time (s)');
+ylabel('ecg (mV)');
+subplot(3,2,2)
+plot(f, abs(ECG))
+xlim([0 fs/2]);
+title('Module of ECG spectrum - ecg 200 Hz sampled');
+xlabel('frequency (Hz)');
+ylabel('ECG (mV)');
+subplot(3,2,3)
+plot(tx(1:t1*f1s), x(1:t1*f1s))
+title('5s ecg - 100 Hz sampled');
+xlabel('time (s)');
+ylabel('ecg (mV)');
+subplot(3,2,4)
+plot(f1, abs(X))
+xlim([0 50])
+ylim([0 3000])
+title('Module of ECG spectrum - ecg 100 Hz sampled');
+xlabel('frequency (Hz)');
+ylabel('ECG (mV)');
+subplot(3,2,5)
+plot(ty(1:t1*f2s), y(1:t1*f2s))
+ylim([-1 2])
+title('5s ecg - 40 Hz sampled');
+
+xlabel('time (s)');
+ylabel('ecg (mV)');
+subplot(3,2,6)
+plot(f2, abs(Y))
+xlim([0 20])
+ylim([0 3000])
+title('Module of ECG spectrum - ecg 40 Hz sampled');
+xlabel('frequency (Hz)');
+ylabel('ECG (mV)');

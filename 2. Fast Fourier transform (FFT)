@@ -1,16 +1,23 @@
-%CaricareecgClean(fs=200 Hz).
+## Esercizio 2
+**Caricare ecgClean (fs=200 Hz)**
+```
 ecg=load('ecgClean.txt');
-
-N=length(ecg); %lunghezza del segnale ecg
+N=length(ecg); 
 fs=200; %Hz
 smp=1:1:N;
-t=smp/fs; %così si passa in tempo
+t=smp/fs; 
 df=fs/N;
 f=df*smp-df;
-%Calcolarne la FFT senza togliere la media al segnale
+```
+
+**Calcolare la FFT senza togliere la media al segnale**
+```
 ECG=fft(ecg);
-%Plottarein blu, nella stessa figura (uno sotto l’altro), il
-modulo e la fase dello spettro del segnale.
+```
+
+**Plottare in blu, nella stessa figura (uno sotto l’altro), il
+modulo e la fase dello spettro del segnale**
+```
 figure
 subplot(2, 1, 1)
 plot(f, abs(ECG))
@@ -18,17 +25,28 @@ xlim([0 fs/2]);
 subplot(2, 1, 2)
 plot(f, angle(ECG))
 xlim([0 fs/2]);
-%Indicare frequenza massima osservabile e risoluzione in
-frequenza
+```
+
+** Indicare frequenza massima osservabile e risoluzione in
+frequenza**
+```
 fmax=fs/2;
 ris_freq=fs/N;
-%Togliere la media al segnale
+```
 
+**Togliere la media al segnale**
+```
 ecg2=ecg-mean(ecg);
-%Calcolare la FFT del segnale a media nulla
+```
+
+**Calcolare la FFT del segnale a media nulla**
+```
 ECG2=fft(ecg2);
-%Plottare, in rosso, sopra ai plot precedenti, il modulo e la
-fase dello spettro del segnale a media nulla
+```
+
+**Plottare, in rosso, sopra ai plot precedenti, il modulo e la
+fase dello spettro del segnale a media nulla**
+```
 hold on;
 subplot(2,1,1)
 plot(f, abs(ECG2), 'r')
@@ -37,9 +55,10 @@ subplot(2,1,2)
 plot(f, angle(ECG2), 'r')
 xlim([0 fs/2]);
 hold off;
-%fin qui va bene
+```
 
-%qui voglio farla 2x2, è solo una questione formale
+*qui voglio farla 2x2, è solo una questione formale*
+```
 figure
 subplot(2, 2, 1)
 plot(f, abs(ECG))
@@ -62,6 +81,7 @@ xlim([0 fs/2]);
 ylim([0 3000]);
 subplot(2,2,4)
 plot(f, angle(ECG2), 'r')
-
 xlim([0 fs/2]);
 hold off;
+```
+

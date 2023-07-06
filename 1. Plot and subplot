@@ -1,4 +1,6 @@
-%primo esercizio di signal processing 
+# Primo esercizio di signal processing
+
+```
 ecg=load('ecgClean.txt');
 %così si apre il file e si mette tutto in un vettore
 %ecg nel tempo; ECG nel dominio della frequenza; per adesso
@@ -88,3 +90,4 @@ title('Primi 5 battiti');
 xlabel('Campioni');
 ylabel('ecg (mV)');
 xlim([0 b5]);
+```
